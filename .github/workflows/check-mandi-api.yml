@@ -1,0 +1,54 @@
+name: Check Mandi Price API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Request two real mandi records
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.parse
+          import urllib.request
+
+          resource_id = "9ef84268-d588-465a-a308-a864a43d0070"
+          params = urllib.parse.urlencode({
+              "api-key": os.environ["DATA_GOV_API_KEY"],
+              "format": "json",
+              "limit": "2",
+          })
+          url = f"https://api.data.gov.in/resource/{resource_id}?{params}"
+
+          try:
+              with urllib.request.urlopen(url, timeout=30) as response:
+                  payload = json.load(response)
+          except Exception as error:
+              print(f"API request failed: {type(error).__name__}: {error}")
+              sys.exit(1)
+
+          records = payload.get("records")
+          if not isinstance(records, list):
+              print("The API responded, but no records were returned.")
+              print("Response message:", payload.get("message", "No message"))
+              sys.exit(1)
+
+          print(f"Connected. Records returned: {len(records)}")
+          if records:
+              print("Fields:", ", ".join(records[0].keys()))
+              print("First real record:", json.dumps(records[0], ensure_ascii=False))
+          PY
