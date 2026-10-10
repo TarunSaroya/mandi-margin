@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mandi Margin</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+</head>
+<body>
+  <header>
+    <h1>Mandi Margin</h1>
+    <p>Find promising mandi-to-mandi trade opportunities.</p>
+  </header>
+
+  <main>
+    <section class="controls" aria-labelledby="search-title">
+      <h2 id="search-title">Find opportunities</h2>
+
+      <label for="commodity">Commodity</label>
+      <select id="commodity">
+        <option>Onion</option>
+        <option>Potato</option>
+        <option>Tomato</option>
+      </select>
+
+      <label for="quantity">Quantity (quintals)</label>
+      <input id="quantity" type="number" min="1" value="100">
+
+      <label for="transport">Transport mode</label>
+      <select id="transport">
+        <option value="road">Road</option>
+        <option value="rail">Rail</option>
+      </select>
+
+      <button type="button">Find trades</button>
+      <p class="demo-note">
+        Map pins are examples. Live mandi prices and route estimates will come later.
+      </p>
+    </section>
+
+    <div class="right-column">
+      <section class="map-panel" aria-labelledby="map-title">
+        <div class="map-heading">
+          <div>
+            <h2 id="map-title">Mandi map</h2>
+            <p>Example locations across India</p>
+          </div>
+          <span class="map-tag">DEMO DATA</span>
+        </div>
+
+        <div id="map" aria-label="Map showing example mandi locations"></div>
+      </section>
+
+      <section class="opportunities" aria-labelledby="results-title">
+        <h2 id="results-title">Trade opportunities</h2>
+        <p>
+          Price comparisons and estimated profit will appear here once we connect the data.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map("map").setView([22.8, 79.0], 5);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    const demoMarkets = [
+      { name: "Azadpur Mandi", city: "Delhi", lat: 28.7041, lon: 77.1025 },
+      { name: "Lasalgaon Market", city: "Maharashtra", lat: 20.1422, lon: 74.2252 },
+      { name: "Indore Mandi", city: "Madhya Pradesh", lat: 22.7196, lon: 75.8577 },
+      { name: "Muhana Mandi", city: "Jaipur", lat: 26.8206, lon: 75.7819 },
+      { name: "Yeshwanthpur Market", city: "Bengaluru", lat: 13.0285, lon: 77.554 }
+    ];
+
+    demoMarkets.forEach((market) => {
+      L.circleMarker([market.lat, market.lon], {
+        radius: 8,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: "#28734d",
+        fillOpacity: 1
+      })
+        .bindPopup(
+          `<strong>${market.name}</strong><br>${market.city}<br><small>Example location — no live price data</small>`
+        )
+        .addTo(map);
+    });
+  </script>
+</body>
+</html>
